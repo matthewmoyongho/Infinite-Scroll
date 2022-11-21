@@ -9,7 +9,7 @@ class PostService {
   Future<List<dynamic>> fetchPosts(int page) async {
     try {
       http.Response response = await http.get(
-        Uri.parse('$baseUrl?_limit=$FETCH_LIMIT&page=$page'),
+        Uri.parse('$baseUrl?_limit=$FETCH_LIMIT&_page=$page'),
       );
       return jsonDecode(response.body) as List;
     } catch (err) {
