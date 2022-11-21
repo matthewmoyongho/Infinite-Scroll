@@ -26,5 +26,10 @@ class User {
 
   String toJson() => json.encode(toMap());
 
-  factory User.fromJson(String source) => User.fromMap(json.decode(source));
+  User.fromJson(Map map)
+      : id = map['id'].toString(),
+        title = map['title'],
+        body = map['body'];
+
+  //factory User.fromJson(String source) => User.fromMap(json.decode(source));
 }

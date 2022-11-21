@@ -16,4 +16,8 @@ class UserError extends UsersState {
   UserError(this.message);
 }
 
-class UsersLoading extends UsersState {}
+class UsersLoading extends UsersState {
+  List<User> oldUsers;
+  bool isFirstFetch;
+  UsersLoading(this.oldUsers, {this.isFirstFetch = false});
+}

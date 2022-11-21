@@ -6,31 +6,30 @@ import '../../data/repositories/users_repository.dart';
 import 'users_event.dart';
 
 class UsersBloc extends Bloc<UsersEvent, UsersState> {
-  final UsersRepository _repository = UsersRepository();
+  final UsersRepository repository;
   int page = 0;
   int limit = 15;
-  UsersBloc() : super(UsersState()) {
+  UsersBloc(this.repository) : super(UsersState()) {
     on<LoadUsers>(_mapLoadUsersToState);
   }
 
   void _mapLoadUsersToState(LoadUsers event, Emitter<UsersState> emit) async {
     final state = this.state;
-    List<User> usersList = List.from(state.users);
-    try {
-      page++;
-      List<User>? users =
-          await _repository.getUsers(page.toString(), limit.toString());
-      if (users == null) {
-        page--;
-        emit(UserError('Could not load users. Please try again'));
-      } else {
-        usersList.addAll(users);
-        emit(UsersLoaded(usersList));
-      }
-    } catch (err) {
-      page--;
-      emit(UserError('Could not load users. Caught error'));
+    if (state is UsersLoading) return;
+    List<User> oldUsers = [];
+
+    if (state is UsersLoaded) {
+      oldUsers = state.users;
     }
+    emit(UsersLoading(oldUsers, isFirstFetch: page == 1));
+    await repository.getUsers(page).then((newUsers) {
+      page++;
+      final users = (this.state as UsersLoading).oldUsers;
+      users.addAll(newUsers);
+      emit(
+        UsersLoaded(users),
+      );
+    });
   }
 
   // Stream<UsersState> mapEventToState(UsersEvent event) async* {
